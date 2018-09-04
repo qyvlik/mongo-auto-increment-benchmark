@@ -2,4 +2,6 @@
 
 mongo-auto-increment-benchmark
 
-maybe: `3675/s`
+Auto increment, maybe: `3675/s`.
+
+Auto increment and insert, maybe `1800/s`

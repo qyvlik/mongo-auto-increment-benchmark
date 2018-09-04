@@ -58,4 +58,41 @@ public class AutoIncrementServiceTest {
 
         logger.info("counter:{}, {}", counter, stopWatch.prettyPrint());
     }
+
+
+    @Test
+    public void batchAutoIncrementForMultiName() throws Exception {
+        BatchRunner batchRunner = new BatchRunner(8);
+
+        StopWatch stopWatch = new StopWatch("batchAutoIncrement");
+
+        stopWatch.start("submit task");
+
+        final int totalCount = 100000;
+        final int step = 10;
+        int count = totalCount;
+        while (count-- > 0) {
+            final int tmp = count;
+            batchRunner.submit(new Runnable() {
+                @Override
+                public void run() {
+                    int endName = tmp % step;
+                    String theFullName = name + "." + endName;
+                    Counter counter = autoIncrementService.autoIncrement(theFullName, 1);
+                }
+            });
+        }
+
+        stopWatch.stop();
+
+        stopWatch.start("loop task");
+
+        batchRunner.loop();
+
+        stopWatch.stop();
+
+        Counter counter = autoIncrementService.getCounter(name);
+
+        logger.info("counter:{}, {}", counter, stopWatch.prettyPrint());
+    }
 }
